@@ -8,7 +8,7 @@ El frontend React ya está completo y funcional; tu trabajo es únicamente en el
 
 ## Stack tecnológico
 
-- **Backend:** .NET 9 + Entity Framework Core + Npgsql + AutoMapper
+- **Backend:** .NET 9 + Entity Framework Core 9 + Npgsql + AutoMapper
 - **Frontend:** React + TypeScript + Vite (completo, no modificarlo)
 - **Base de datos:** PostgreSQL (Neon Tech) — ya migrada y con datos seed cargados
 
