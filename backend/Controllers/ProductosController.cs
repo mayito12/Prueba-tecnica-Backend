@@ -1,125 +1,118 @@
+using Backend.DTOs.Productos;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductosController : ControllerBase
+public sealed class ProductosController(
+    IProductoService service,
+    ILogger<ProductosController> logger) : ApiControllerBase
 {
-    private readonly ILogger<ProductosController> _logger;
-
-    public ProductosController(ILogger<ProductosController> logger)
-    {
-        _logger = logger;
-    }
-
     /// <summary>Obtiene todos los productos activos.</summary>
     /// <returns>Lista de productos.</returns>
     [HttpGet]
-    public async Task<ActionResult> GetAll()
+    [ProducesResponseType(typeof(IReadOnlyList<ProductoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<ProductoDto>>> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Obteniendo todos los productos");
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para obtener productos");
+            return Ok(await service.GetAllAsync(cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al obtener productos");
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "obtener productos");
         }
     }
 
     /// <summary>Obtiene un producto por su ID.</summary>
     /// <param name="id">ID del producto.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Producto encontrado o 404 si no existe.</returns>
-    [HttpGet("{id}")]
-    public async Task<ActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductoDto>> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Obteniendo producto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para obtener producto {ProductoId}", id);
+            return Ok(await service.GetByIdAsync(id, cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al obtener producto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "obtener producto");
         }
     }
 
     /// <summary>Crea un nuevo producto.</summary>
     /// <param name="dto">Datos del producto a crear.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Producto creado con su ID asignado.</returns>
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] object dto)
+    [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ProductoDto>> Create(
+        [FromBody] CreateProductoDto dto,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Creando nuevo producto");
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para crear producto");
+            var producto = await service.CreateAsync(dto, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = producto.Id }, producto);
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al crear producto");
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "crear producto");
         }
     }
 
     /// <summary>Actualiza un producto existente.</summary>
     /// <param name="id">ID del producto a actualizar.</param>
     /// <param name="dto">Datos actualizados del producto.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Producto actualizado o 404 si no existe.</returns>
-    [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, [FromBody] object dto)
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductoDto>> Update(
+        int id,
+        [FromBody] UpdateProductoDto dto,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Actualizando producto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para actualizar producto {ProductoId}", id);
+            return Ok(await service.UpdateAsync(id, dto, cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al actualizar producto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "actualizar producto");
         }
     }
 
     /// <summary>Elimina (soft delete) un producto.</summary>
     /// <param name="id">ID del producto a eliminar.</param>
-    /// <returns>204 si se eliminó correctamente, 404 si no existe.</returns>
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
+    /// <returns>204 si se elimino correctamente, 404 si no existe.</returns>
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Eliminando producto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para eliminar producto {ProductoId}", id);
+            await service.DeleteAsync(id, cancellationToken);
+            return NoContent();
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al eliminar producto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "eliminar producto");
         }
     }
 }

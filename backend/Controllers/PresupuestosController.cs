@@ -1,147 +1,140 @@
+using Backend.DTOs.Presupuestos;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PresupuestosController : ControllerBase
+public sealed class PresupuestosController(
+    IPresupuestoService service,
+    ILogger<PresupuestosController> logger) : ApiControllerBase
 {
-    private readonly ILogger<PresupuestosController> _logger;
-
-    public PresupuestosController(ILogger<PresupuestosController> logger)
-    {
-        _logger = logger;
-    }
-
     /// <summary>Obtiene todos los presupuestos.</summary>
     /// <returns>Lista de presupuestos.</returns>
     [HttpGet]
-    public async Task<ActionResult> GetAll()
+    [ProducesResponseType(typeof(IReadOnlyList<PresupuestoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<PresupuestoDto>>> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Obteniendo todos los presupuestos");
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para obtener presupuestos");
+            return Ok(await service.GetAllAsync(cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al obtener presupuestos");
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "obtener presupuestos");
         }
     }
 
     /// <summary>Obtiene un presupuesto por su ID.</summary>
     /// <param name="id">ID del presupuesto.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Presupuesto encontrado o 404 si no existe.</returns>
-    [HttpGet("{id}")]
-    public async Task<ActionResult> GetById(int id)
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(PresupuestoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PresupuestoDto>> GetById(int id, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Obteniendo presupuesto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para obtener presupuesto {PresupuestoId}", id);
+            return Ok(await service.GetByIdAsync(id, cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al obtener presupuesto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "obtener presupuesto");
         }
     }
 
     /// <summary>Crea un nuevo presupuesto con sus productos y servicios asociados.</summary>
     /// <param name="dto">Datos del presupuesto incluyendo productos y servicios.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Presupuesto creado con su ID asignado.</returns>
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] object dto)
+    [ProducesResponseType(typeof(PresupuestoDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PresupuestoDto>> Create(
+        [FromBody] CreatePresupuestoDto dto,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Creando nuevo presupuesto");
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para crear presupuesto");
+            var presupuesto = await service.CreateAsync(dto, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = presupuesto.Id }, presupuesto);
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al crear presupuesto");
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "crear presupuesto");
         }
     }
 
     /// <summary>Actualiza el estado de un presupuesto (Pendiente/Aprobado/Rechazado).</summary>
     /// <param name="id">ID del presupuesto.</param>
     /// <param name="dto">Nuevo estado del presupuesto.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Presupuesto actualizado o 404 si no existe.</returns>
-    [HttpPatch("{id}/estado")]
-    public async Task<ActionResult> UpdateEstado(int id, [FromBody] object dto)
+    [HttpPatch("{id:int}/estado")]
+    [ProducesResponseType(typeof(PresupuestoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PresupuestoDto>> UpdateEstado(
+        int id,
+        [FromBody] UpdateEstadoDto dto,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Actualizando estado del presupuesto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para actualizar estado del presupuesto {PresupuestoId}", id);
+            return Ok(await service.UpdateEstadoAsync(id, dto, cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al actualizar estado del presupuesto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "actualizar estado de presupuesto");
         }
     }
 
     /// <summary>Elimina un presupuesto.</summary>
     /// <param name="id">ID del presupuesto a eliminar.</param>
-    /// <returns>204 si se eliminó correctamente, 404 si no existe.</returns>
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
+    /// <returns>204 si se elimino correctamente, 404 si no existe.</returns>
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Eliminando presupuesto {Id}", id);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud para eliminar presupuesto {PresupuestoId}", id);
+            await service.DeleteAsync(id, cancellationToken);
+            return NoContent();
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al eliminar presupuesto {Id}", id);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "eliminar presupuesto");
         }
     }
 
-    /// <summary>Obtiene todos los presupuestos de un cliente específico.</summary>
+    /// <summary>Obtiene todos los presupuestos de un cliente especifico.</summary>
     /// <param name="clienteId">ID del cliente.</param>
+    /// <param name="cancellationToken">Token de cancelacion de la solicitud.</param>
     /// <returns>Lista de presupuestos del cliente.</returns>
-    [HttpGet("cliente/{clienteId}")]
-    public async Task<ActionResult> GetByClienteId(int clienteId)
+    [HttpGet("cliente/{clienteId:int}")]
+    [ProducesResponseType(typeof(IReadOnlyList<PresupuestoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<PresupuestoDto>>> GetByClienteId(
+        int clienteId,
+        CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Obteniendo presupuestos del cliente {ClienteId}", clienteId);
-            throw new NotImplementedException();
+            logger.LogInformation("Procesando solicitud de presupuestos del cliente {ClienteId}", clienteId);
+            return Ok(await service.GetByClienteIdAsync(clienteId, cancellationToken));
         }
-        catch (NotImplementedException)
+        catch (Exception exception)
         {
-            return StatusCode(501, new { message = "Endpoint no implementado." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al obtener presupuestos del cliente {ClienteId}", clienteId);
-            return StatusCode(500, new { message = "Error interno del servidor." });
+            return HandleException(exception, logger, "obtener presupuestos por cliente");
         }
     }
 }
