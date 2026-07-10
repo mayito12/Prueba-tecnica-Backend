@@ -1,0 +1,11 @@
+INSERT INTO Clientes (Nombre, Email, Telefono, Direccion, FechaCreacion) VALUES
+('Juan Pérez', 'juan@email.com', '555-0101', 'Av. Principal 123', '2025-01-15 10:30:00+00'),
+('María García', 'maria@email.com', '555-0102', 'Calle Secundaria 456', '2025-02-20 14:00:00+00'),
+('Carlos López', 'carlos@email.com', '555-0103', 'Boulevard Central 789', '2025-03-10 09:15:00+00'),
+('Ana Martínez', 'ana@email.com', '555-0104', 'Plaza Mayor 321', '2025-03-22 11:45:00+00'),
+('Pedro Rodríguez', 'pedro@email.com', '555-0105', 'Pasaje Sur 654', '2025-04-05 08:30:00+00'),
+('Laura Fernández', 'laura@email.com', '555-0106', 'Ruta Norte 987', '2025-04-18 16:20:00+00'),
+('Diego Ramírez', 'diego@email.com', '555-0107', 'Cerro Alto 741', '2025-05-02 13:10:00+00'),
+('Sofía Torres', 'sofia@email.com', '555-0108', 'Valle Verde 852', '2025-05-30 15:00:00+00'),
+('Andrés Vargas', 'andres@email.com', '555-0109', 'Lago Azul 963', '2025-06-12 10:00:00+00'),
+('Valentina Ríos', 'valentina@email.com', '555-0110', 'Costa Mar 159', '2025-06-25 12:30:00+00');
