@@ -201,4 +201,6 @@ PresupuestoServicio: Id, PresupuestoId, ServicioId, Cantidad, PrecioUnitario, Su
 
 ## Entrega
 
-Subir el código completo a un repositorio público en GitHub y compartir el enlace.
+1. Hacer un fork de este repositorio: [MAIA-Workspace/Prueba-tecnica-Backend](https://github.com/MAIA-Workspace/Prueba-tecnica-Backend)
+2. Subir todos los cambios a la rama `main` de tu fork
+3. Enviar un correo a **miguelasin.maia@gmail.com** con copia (CC) a **flavio@inkoimpresores.com** indicando el enlace de tu fork
