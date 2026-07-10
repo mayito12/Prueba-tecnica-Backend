@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5118/api';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -39,10 +39,11 @@ export interface Servicio {
   fechaCreacion: string;
 }
 
-export interface PresupuestoDetalle {
+export interface PresupuestoItem {
   id: number;
-  tipoItem: string;
+  tipo: string;
   itemId: number;
+  nombreItem: string;
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
@@ -55,16 +56,7 @@ export interface Presupuesto {
   fechaCreacion: string;
   total: number;
   estado: string;
-  detalles: PresupuestoDetalle[];
-}
-
-export interface DashboardData {
-  totalClientes: number;
-  totalProductos: number;
-  totalServicios: number;
-  totalPresupuestos: number;
-  presupuestosPendientes: number;
-  ingresosTotales: number;
+  items: PresupuestoItem[];
 }
 
 export const api = {
@@ -92,8 +84,10 @@ export const api = {
   presupuestos: {
     list: () => request<Presupuesto[]>('/presupuestos'),
     get: (id: number) => request<Presupuesto>(`/presupuestos/${id}`),
-    create: (data: unknown) => request<Presupuesto>('/presupuestos', { method: 'POST', body: JSON.stringify(data) }),
-    updateEstado: (id: number, data: { estado: string }) => request<Presupuesto>(`/presupuestos/${id}/estado`, { method: 'PATCH', body: JSON.stringify(data) }),
+    create: (data: { clienteId: number; items: { tipo: string; itemId: number; cantidad: number }[] }) =>
+      request<Presupuesto>('/presupuestos', { method: 'POST', body: JSON.stringify(data) }),
+    updateEstado: (id: number, data: { estado: string }) =>
+      request<Presupuesto>(`/presupuestos/${id}/estado`, { method: 'PATCH', body: JSON.stringify(data) }),
     delete: (id: number) => request<void>(`/presupuestos/${id}`, { method: 'DELETE' }),
   },
 };
