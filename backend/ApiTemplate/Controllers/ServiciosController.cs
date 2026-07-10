@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ApiTemplate.DTOs;
-using ApiTemplate.Services;
 
 namespace ApiTemplate.Controllers;
 
@@ -8,51 +6,38 @@ namespace ApiTemplate.Controllers;
 [Route("api/[controller]")]
 public class ServiciosController : ControllerBase
 {
-    private readonly IServicioService _servicioService;
-
-    public ServiciosController(IServicioService servicioService)
-    {
-        _servicioService = servicioService;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ServicioDto>>> GetAll()
+    public IActionResult GetAll()
     {
-        var servicios = await _servicioService.GetAllAsync();
-        return Ok(servicios);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ServicioDto>> GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var servicio = await _servicioService.GetByIdAsync(id);
-        if (servicio == null)
-            return NotFound(new { message = $"Servicio con ID {id} no encontrado." });
-        return Ok(servicio);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpPost]
-    public async Task<ActionResult<ServicioDto>> Create(CreateServicioDto dto)
+    public IActionResult Create([FromBody] object dto)
     {
-        var servicio = await _servicioService.CreateAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = servicio.Id }, servicio);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ServicioDto>> Update(int id, UpdateServicioDto dto)
+    public IActionResult Update(int id, [FromBody] object dto)
     {
-        var servicio = await _servicioService.UpdateAsync(id, dto);
-        if (servicio == null)
-            return NotFound(new { message = $"Servicio con ID {id} no encontrado." });
-        return Ok(servicio);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public IActionResult Delete(int id)
     {
-        var deleted = await _servicioService.DeleteAsync(id);
-        if (!deleted)
-            return NotFound(new { message = $"Servicio con ID {id} no encontrado." });
-        return NoContent();
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 }

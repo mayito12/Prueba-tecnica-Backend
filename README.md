@@ -15,56 +15,62 @@ Completar una API REST en .NET que será consumida por un frontend React (ya inc
 ```
 Prueba-tecnica-backend/
 ├── backend/
-│   └── ApiTemplate/          <-- API a completar
-│       ├── Controllers/      (esqueletos creados)
-│       ├── Services/         (esqueletos creados)
-│       ├── Repositories/     (esqueletos creados)
-│       ├── Models/           (ya incluidos)
-│       ├── DTOs/             (ya incluidos)
-│       ├── Data/             (ya incluido)
-│       └── Program.cs        (ya configurado)
-├── frontend/                 <-- Frontend React (completo, no modificar)
+│   └── ApiTemplate/
+│       ├── Controllers/      (esqueletos vacíos con TODOs)
+│       ├── Services/          (solo interfaces)
+│       ├── Repositories/      (solo interfaces)
+│       ├── Models/            (entidades completas)
+│       ├── DTOs/              (completos)
+│       ├── Data/              (AppDbContext completo)
+│       └── Program.cs         (configuración básica, DI por completar)
+├── frontend/                  (completo, no modificar)
 │   └── src/
-│       ├── pages/            (Dashboard, Productos, Servicios, Presupuestos, Clientes)
-│       └── api.ts            (cliente HTTP para consumir la API)
+│       ├── pages/             (Dashboard, Productos, Servicios, Presupuestos, Clientes)
+│       └── api.ts             (cliente HTTP para consumir la API)
 └── README.md
 ```
 
-## Lo que debes implementar en el backend
+## Lo que debes implementar
 
-Debes **completar la implementación** de la API .NET. El esqueleto del proyecto ya está creado con la estructura de capas. Tu tarea es escribir la lógica faltante siguiendo buenas prácticas. **Presta especial atención a los siguientes puntos**:
+Debes implementar **toda la lógica del backend** partiendo del esqueleto proporcionado. El proyecto ya incluye:
 
-### 1. Capa de Repositorios (Data Access)
-- Implementar completamente cada repositorio (`ClienteRepository`, `ProductoRepository`, `ServicioRepository`, `PresupuestoRepository`)
-- Operaciones CRUD completas para cada módulo
-- Consultas optimizadas con `Include` para relaciones
+- ✅ Modelos de datos (entidades)
+- ✅ DTOs de entrada/salida
+- ✅ AppDbContext con las relaciones entre entidades
+- ✅ Interfaces de Repositorios y Servicios
+- ✅ Controladores con los endpoints definidos (vacíos)
+- ✅ Configuración de EF Core + PostgreSQL
+- ✅ Cliente HTTP en el frontend
 
-### 2. Capa de Servicios (Business Logic)
-- Implementar completamente cada servicio (`ClienteService`, `ProductoService`, `ServicioService`, `PresupuestoService`)
-- Validaciones de negocio
-- Mapeo entre entidades y DTOs
-- Manejo de errores y excepciones
-- Logging de operaciones importantes
+### Capa de Repositorios
 
-### 3. Capa de Controladores (API endpoints)
-- Endpoints REST completos para cada módulo (los esqueletos ya están creados)
-- Documentación de endpoints
-- Manejo de códigos HTTP apropiados (200, 201, 204, 400, 404, 500)
+Crear las implementaciones concretas de cada interfaz en `Repositories/`:
 
-### 4. Base de datos
-- Crear la base de datos en **Neon Tech** (PostgreSQL)
-- Configurar la conexión en `appsettings.json`
-- Crear y ejecutar las migraciones de Entity Framework Core
-- Las tablas deben reflejar fielmente los modelos incluidos
+- `ClienteRepository` → `IClienteRepository`
+- `ProductoRepository` → `IProductoRepository`
+- `ServicioRepository` → `IServicioRepository`
+- `PresupuestoRepository` → `IPresupuestoRepository`
 
-### 5. Buenas prácticas que evaluaremos
-- **Arquitectura en capas:** Separación clara entre Controllers / Services / Repositories
-- **Código limpio y legible:** Nombres descriptivos, principios SOLID
-- **Comentarios relevantes:** Explica decisiones importantes donde sea necesario
-- **Manejo de errores:** Try-catch, validaciones, mensajes de error claros
-- **Logging:** Uso de ILogger para registrar operaciones importantes
-- **Inyección de dependencias:** Correcto registro y uso de dependencias
-- **DTOs correctamente implementados:** Mapeo adecuado entre entidades y DTOs
+Cada repositorio debe implementar operaciones CRUD completas usando Entity Framework Core.
+
+### Capa de Servicios
+
+Crear las implementaciones concretas de cada interfaz en `Services/`:
+
+- `ClienteService` → `IClienteService`
+- `ProductoService` → `IProductoService`
+- `ServicioService` → `IServicioService`
+- `PresupuestoService` → `IPresupuestoService`
+
+Deben contener la lógica de negocio, validaciones, mapeo entre entidades y DTOs, y logging.
+
+### Capa de Controladores
+
+Completar los controladores en `Controllers/` inyectando los servicios y exponiendo los endpoints REST.
+
+### Configuración
+
+Registrar todos los repositorios y servicios en el contenedor de DI en `Program.cs`.
 
 ## Modelo de datos
 
@@ -73,16 +79,6 @@ Debes **completar la implementación** de la API .NET. El esqueleto del proyecto
 - **Servicio:** Id, Nombre, Descripción, PrecioPorHora, FechaCreacion
 - **Presupuesto:** Id, ClienteId, FechaCreacion, Total, Estado (Pendiente/Aprobado/Rechazado)
 - **PresupuestoDetalle:** Id, PresupuestoId, TipoItem (Producto/Servicio), ItemId, Cantidad, PrecioUnitario, Subtotal
-
-## Instrucciones para empezar
-
-1. Clonar este repositorio
-2. Crear una base de datos PostgreSQL en [Neon Tech](https://neon.tech)
-3. Configurar la conexión en `backend/ApiTemplate/appsettings.json`
-4. Ejecutar migraciones de EF Core
-5. Ejecutar el backend: `cd backend/ApiTemplate && dotnet run`
-6. Ejecutar el frontend: `cd frontend && npm run dev`
-7. Abrir `http://localhost:5173` en el navegador
 
 ## Endpoints que debe exponer la API
 
@@ -105,21 +101,32 @@ Debes **completar la implementación** de la API .NET. El esqueleto del proyecto
 | DELETE | /api/servicios/{id} | Eliminar servicio |
 | GET | /api/presupuestos | Listar presupuestos |
 | GET | /api/presupuestos/{id} | Obtener presupuesto por ID |
-| POST | /api/presupuestos | Crear presupuesto |
-| PATCH | /api/presupuestos/{id}/estado | Actualizar estado del presupuesto |
+| POST | /api/presupuestos | Crear presupuesto (con detalles) |
+| PATCH | /api/presupuestos/{id}/estado | Actualizar estado |
 | DELETE | /api/presupuestos/{id} | Eliminar presupuesto |
 | GET | /api/presupuestos/cliente/{clienteId} | Presupuestos por cliente |
 
 ## Criterios de evaluación
 
-- Correcta implementación de la arquitectura en capas
-- Calidad y legibilidad del código
-- Manejo de errores y casos borde
-- Uso de logging
-- Comentarios explicativos
-- Funcionamiento correcto de todos los CRUD
-- Integración correcta con la base de datos
-- Capacidad de consumir la API desde el frontend
+- **Arquitectura en capas:** Separación clara Controllers → Services → Repositories
+- **Código limpio:** Nombres descriptivos, principios SOLID, sin código duplicado
+- **Comentarios relevantes:** Donde sea necesario explicar decisiones
+- **Manejo de errores:** Try-catch, validaciones, códigos HTTP apropiados
+- **Logging:** Uso de ILogger para registrar operaciones importantes
+- **Operaciones CRUD completas** para cada módulo
+- **Integración correcta con PostgreSQL** en Neon Tech
+- **La API debe poder ser consumida** desde el frontend React
+
+## Instrucciones para empezar
+
+1. Clonar este repositorio
+2. Crear una base de datos PostgreSQL en [Neon Tech](https://neon.tech)
+3. Configurar la conexión en `backend/ApiTemplate/appsettings.json`
+4. Implementar la lógica del backend (repositorios, servicios, controladores)
+5. Ejecutar migraciones de EF Core
+6. Ejecutar el backend: `cd backend/ApiTemplate && dotnet run`
+7. Ejecutar el frontend: `cd frontend && npm run dev`
+8. Abrir `http://localhost:5173` en el navegador
 
 ## Entrega
 

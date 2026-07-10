@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ApiTemplate.DTOs;
-using ApiTemplate.Services;
 
 namespace ApiTemplate.Controllers;
 
@@ -8,76 +6,45 @@ namespace ApiTemplate.Controllers;
 [Route("api/[controller]")]
 public class PresupuestosController : ControllerBase
 {
-    private readonly IPresupuestoService _presupuestoService;
-
-    public PresupuestosController(IPresupuestoService presupuestoService)
-    {
-        _presupuestoService = presupuestoService;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PresupuestoDto>>> GetAll()
+    public IActionResult GetAll()
     {
-        var presupuestos = await _presupuestoService.GetAllAsync();
-        return Ok(presupuestos);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<PresupuestoDto>> GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var presupuesto = await _presupuestoService.GetByIdAsync(id);
-        if (presupuesto == null)
-            return NotFound(new { message = $"Presupuesto con ID {id} no encontrado." });
-        return Ok(presupuesto);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpPost]
-    public async Task<ActionResult<PresupuestoDto>> Create(CreatePresupuestoDto dto)
+    public IActionResult Create([FromBody] object dto)
     {
-        try
-        {
-            var presupuesto = await _presupuestoService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = presupuesto.Id }, presupuesto);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpPatch("{id}/estado")]
-    public async Task<ActionResult<PresupuestoDto>> UpdateEstado(int id, UpdatePresupuestoEstadoDto dto)
+    public IActionResult UpdateEstado(int id, [FromBody] object dto)
     {
-        try
-        {
-            var presupuesto = await _presupuestoService.UpdateEstadoAsync(id, dto);
-            if (presupuesto == null)
-                return NotFound(new { message = $"Presupuesto con ID {id} no encontrado." });
-            return Ok(presupuesto);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public IActionResult Delete(int id)
     {
-        var deleted = await _presupuestoService.DeleteAsync(id);
-        if (!deleted)
-            return NotFound(new { message = $"Presupuesto con ID {id} no encontrado." });
-        return NoContent();
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 
     [HttpGet("cliente/{clienteId}")]
-    public async Task<ActionResult<IEnumerable<PresupuestoDto>>> GetByClienteId(int clienteId)
+    public IActionResult GetByClienteId(int clienteId)
     {
-        var presupuestos = await _presupuestoService.GetByClienteIdAsync(clienteId);
-        return Ok(presupuestos);
+        // TODO: Implementar
+        throw new NotImplementedException();
     }
 }
